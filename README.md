@@ -1,19 +1,20 @@
-# Arcanum — Fase 1 UI
+# Arcanum V2
 
-Dashboard visual em Next.js para análise e planejamento de comunicação política. Esta entrega usa apenas dados locais demonstrativos e não possui backend, banco, IA ou APIs externas.
+Interface visual premium em Next.js para análise e planejamento estratégico. Esta versão usa somente dados locais demonstrativos e está preparada para receber backend, autenticação real, banco e IA em uma etapa futura.
 
-## Rodar
+## Executar
+
 ```bash
 npm install
 npm run dev
 ```
-Acesse http://localhost:3000. Login visual: `mkt2026` / `mkt2026`.
 
 ## Build
+
 ```bash
-npm run lint
 npm run build
 ```
 
-## Deploy Vercel
-Envie os arquivos extraídos para um repositório GitHub e importe esse repositório na Vercel. Não envie o ZIP diretamente para o GitHub Importer.
+## Deploy na Vercel
+
+Use o preset **Next.js** e deixe **Output Directory** vazio.
