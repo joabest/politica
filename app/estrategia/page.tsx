@@ -1,1 +1,1 @@
-import GenericPage from "@/components/GenericPage";export default function Page(){return <GenericPage title="Estratégia"/>}
+import StrategyHub from "@/components/StrategyHub";export default function Page(){return <StrategyHub/>}
