@@ -1,0 +1,4 @@
+@import "tailwindcss";
+:root{--bg:#f5f5f7;--card:#fff;--text:#16131d;--muted:#716b7b;--border:#e8e5ec;--primary:#4b287f;--secondary:#315bce}
+.dark{--bg:#121016;--card:#1b1820;--text:#f7f5fa;--muted:#aaa4b2;--border:#302b37;--primary:#aa80e8;--secondary:#7da2ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}.card{background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:0 8px 30px rgba(31,18,49,.05)}.muted{color:var(--muted)}.badge{display:inline-flex;border:1px solid var(--border);border-radius:999px;padding:4px 9px;font-size:11px;color:var(--muted);background:var(--card)}button,input,select,textarea{font:inherit}.btn{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;background:var(--primary);color:white}.btn.secondary{background:var(--card);color:var(--text);border:1px solid var(--border)}

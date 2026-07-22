@@ -1,0 +1,1 @@
+import CandidatePage from "@/components/CandidatePage";export default function Page(){return <CandidatePage type="ana"/>}

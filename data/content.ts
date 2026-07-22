@@ -1,0 +1,11 @@
+export const candidates = {
+ ana: {name:"Ana Carolina Serra", initials:"ACS", instagram:"@anacarolinaserra", description:"Liderança pública associada ao cuidado, atuação social, família e proximidade.", scores:[89,94,85,88], labels:["Posicionamento","Humanização","Autoridade","Consistência"], themes:["Proteção social","Mulheres","Família","Educação","Primeira infância","Inclusão"]},
+ paulo:{name:"Paulo Serra",initials:"PS",instagram:"@pauloserra.sp",description:"Gestão pública, entregas, infraestrutura, desenvolvimento regional e liderança.",scores:[93,92,90,79],labels:["Gestão","Autoridade","Liderança","Humanização"],themes:["Gestão","Infraestrutura","Desenvolvimento","Mobilidade","Liderança","Legado"]}
+};
+export const trend=[
+ {week:"S1",posicionamento:72,autoridade:74,humanizacao:68,consistencia:70},{week:"S2",posicionamento:75,autoridade:76,humanizacao:72,consistencia:73},{week:"S3",posicionamento:78,autoridade:79,humanizacao:74,consistencia:75},{week:"S4",posicionamento:80,autoridade:81,humanizacao:78,consistencia:79},{week:"S5",posicionamento:82,autoridade:84,humanizacao:80,consistencia:81},{week:"S6",posicionamento:85,autoridade:86,humanizacao:81,consistencia:83},{week:"S7",posicionamento:87,autoridade:88,humanizacao:83,consistencia:84},{week:"S8",posicionamento:89,autoridade:90,humanizacao:85,consistencia:86}
+];
+export const radar=[{subject:"Educação",ana:92,paulo:70},{subject:"Saúde",ana:80,paulo:78},{subject:"Família",ana:95,paulo:68},{subject:"Mulheres",ana:96,paulo:55},{subject:"Economia",ana:60,paulo:88},{subject:"Infraestrutura",ana:58,paulo:96},{subject:"Mobilidade",ana:65,paulo:91},{subject:"Gestão",ana:76,paulo:95},{subject:"Inovação",ana:74,paulo:86},{subject:"Social",ana:98,paulo:72}];
+export const menu=[
+ ["/dashboard","Visão Geral"],["/candidatos/ana-carolina","Ana Carolina Serra"],["/candidatos/paulo-serra","Paulo Serra"],["/comparativo","Comparativo"],["/estrategia","Estratégia"],["/marketing","Marketing"],["/branding","Branding"],["/redes-sociais","Redes Sociais"],["/biblioteca","Biblioteca"],["/clipping","Clipping"],["/planejamento","Planejamento"],["/calendario-eleitoral","Calendário Eleitoral"],["/relatorios","Relatórios"],["/configuracoes","Configurações"]
+] as const;

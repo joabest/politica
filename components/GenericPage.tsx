@@ -1,0 +1,11 @@
+import Shell from "./Shell";import {Section} from "./Widgets";const items={
+"Estratégia":["Objetivos e prioridades","Pilares e narrativas","Matriz esforço x impacto","Plano de 7, 30 e 90 dias","Linha do tempo e responsáveis","Riscos e oportunidades"],
+"Marketing":["Posicionamento","Proposta de valor","Pesquisa e planejamento","Funil de comunicação","Conteúdo e reputação","Métricas e crise"],
+"Branding":["DNA da marca","Essência e propósito","Personalidade e arquétipos","Tom de voz","Identidade visual","Consistência"],
+"Redes Sociais":["Visão multicanal","Distribuição de formatos","Frequência semanal","Temas predominantes","Posts demonstrativos","Exportação visual"],
+"Biblioteca":["Marketing político","Branding","Storytelling","Copywriting","Artigos e estudos","Cases educacionais"],
+"Clipping":["Monitoramento demonstrativo","Sentimento","Impacto potencial","Notas internas","Filtros e busca","Status de revisão"],
+"Planejamento":["Calendário mensal","Calendário semanal","Kanban","Tarefas e responsáveis","Campanhas e eventos","Prazos e prioridades"],
+"Relatórios":["Diagnóstico estratégico","Branding","Redes sociais","Comparativo","Plano editorial","Resumo executivo"],
+"Configurações":["Nome e subtítulo","Tema visual","Preferências de relatório","Idioma","Exportar dados locais","Limpar dados demonstrativos"]};
+export default function GenericPage({title}:{title:keyof typeof items}){return <Shell title={title}><div className="card p-7"><span className="badge">Fase 1 • Interface</span><h2 className="text-3xl font-black mt-4">{title}</h2><p className="muted mt-2 max-w-3xl">Área visual completa e preparada para receber persistência, autenticação e integrações nas próximas fases.</p></div><div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5">{items[title].map((x,i)=><Section key={x} title={x}><div className="h-28 rounded-xl border border-dashed border-[var(--border)] grid place-items-center text-center p-4"><div><b>{i%2===0?'Painel estruturado':'Módulo interativo'}</b><p className="text-sm muted mt-1">Conteúdo demonstrativo e controles visuais.</p></div></div><button className="btn secondary mt-4">Abrir módulo</button></Section>)}</div></Shell>}
