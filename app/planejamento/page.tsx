@@ -1,1 +1,6 @@
-import GenericPage from "@/components/GenericPage";export default function Page(){return <GenericPage title="Planejamento"/>}
+import Shell from "@/components/Shell";
+import WorkItemsManager from "@/components/backend/WorkItemsManager";
+
+export default function PlanningPage() {
+  return <Shell title="Planejamento"><WorkItemsManager/></Shell>;
+}
