@@ -2,7 +2,7 @@
 import Link from "next/link";import {usePathname} from "next/navigation";import {menu} from "@/data/content";
 import {Menu,Search,Sun,Moon,LogOut,PanelLeftClose,PanelLeftOpen,LayoutDashboard,Users,GitCompare,Target,Megaphone,Palette,Share2,Library,Newspaper,ClipboardList,CalendarDays,FileText,Settings,Bell,Command,ChevronRight,Radar,Clapperboard,Bot} from "lucide-react";
 import {useState} from "react";import {useTheme} from "next-themes";import CommandPalette from "./CommandPalette";import CampaignSelector from "./CampaignSelector";import {createClient} from "@/lib/supabase/client";
-const icons=[LayoutDashboard,Target,Users,Users,GitCompare,Target,Radar,Clapperboard,Megaphone,Palette,Share2,Library,Newspaper,ClipboardList,CalendarDays,FileText,Bot,Settings];
+const icons=[LayoutDashboard,Target,Users,GitCompare,Target,Radar,Clapperboard,Megaphone,Palette,Share2,Library,Newspaper,ClipboardList,CalendarDays,FileText,Bot,Settings];
 export default function Shell({children,title}:{children:React.ReactNode,title:string}){
  const p=usePathname();const [open,setOpen]=useState(true);const [mobile,setMobile]=useState(false);const {theme,setTheme}=useTheme();const supabase=createClient();async function logout(){if(supabase)await supabase.auth.signOut();await fetch("/auth/logout",{method:"POST"});window.location.href="/login";}
  return <div className="min-h-screen flex">

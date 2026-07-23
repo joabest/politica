@@ -1,6 +1,6 @@
 {
-  "name": "arcanum-v6-campanhas",
-  "version": "1.1.0",
+  "name": "arcanum-v7-candidatos-equipe",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

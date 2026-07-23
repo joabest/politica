@@ -1,0 +1,11 @@
+-- Arcanum Fase 7 — candidatos e equipe por campanha
+create table if not exists public.candidates (
+ id uuid primary key default gen_random_uuid(), owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+ campaign_id uuid not null references public.campaigns(id) on delete cascade, full_name text not null, public_name text not null default '', office text not null default '', party text not null default '', number text not null default '', city text not null default '', state text not null default 'SP', bio text not null default '', slogan text not null default '', instagram text not null default '', phone text not null default '', email text not null default '', status text not null default 'pre_candidato' check(status in ('pre_candidato','candidato','mandato','inativo')), photo_url text not null default '', strengths text not null default '', risks text not null default '', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+create table if not exists public.campaign_team (
+ id uuid primary key default gen_random_uuid(), owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+ campaign_id uuid not null references public.campaigns(id) on delete cascade, full_name text not null, role text not null, area text not null default 'Estratégia', email text not null default '', phone text not null default '', status text not null default 'ativo' check(status in ('ativo','convidado','inativo')), notes text not null default '', created_at timestamptz not null default now(), updated_at timestamptz not null default now());
+alter table public.candidates enable row level security; alter table public.campaign_team enable row level security;
+drop policy if exists "candidates_all_own" on public.candidates; create policy "candidates_all_own" on public.candidates for all using(auth.uid()=owner_id) with check(auth.uid()=owner_id);
+drop policy if exists "campaign_team_all_own" on public.campaign_team; create policy "campaign_team_all_own" on public.campaign_team for all using(auth.uid()=owner_id) with check(auth.uid()=owner_id);
+create index if not exists candidates_campaign_idx on public.candidates(campaign_id); create index if not exists campaign_team_campaign_idx on public.campaign_team(campaign_id);
