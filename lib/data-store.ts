@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/client";
+import { getActiveCampaignId } from "@/lib/campaign-store";
 
 export type WorkItem = {
   id: string;
+  campaign_id: string;
   title: string;
   description: string;
   status: "backlog" | "em_andamento" | "revisao" | "concluido";
@@ -12,48 +14,45 @@ export type WorkItem = {
   created_at: string;
 };
 
-const STORAGE_KEY = "arcanum-work-items-v1";
-const demoItems: WorkItem[] = [
-  { id: "demo-1", title: "Revisar calendário editorial", description: "Validar temas, formatos e responsáveis da próxima semana.", status: "em_andamento", priority: "alta", due_date: null, assignee: "Equipe de conteúdo", category: "Conteúdo", created_at: new Date().toISOString() },
-  { id: "demo-2", title: "Preparar briefing de entrevista", description: "Organizar evidências, mensagens-chave e perguntas críticas.", status: "revisao", priority: "media", due_date: null, assignee: "Comunicação", category: "Imprensa", created_at: new Date().toISOString() },
-  { id: "demo-3", title: "Atualizar radar de temas", description: "Reavaliar cobertura, risco e oportunidades temáticas.", status: "backlog", priority: "media", due_date: null, assignee: "Estratégia", category: "Análise", created_at: new Date().toISOString() },
-];
+const STORAGE_KEY = "arcanum-work-items-v2";
+const active = () => getActiveCampaignId() || "demo-campaign-1";
 
-function localItems() {
-  if (typeof window === "undefined") return demoItems;
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(demoItems));
-    return demoItems;
-  }
-  try { return JSON.parse(stored) as WorkItem[]; } catch { return demoItems; }
+function localItems(): WorkItem[] {
+  if (typeof window === "undefined") return [];
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]") as WorkItem[]; }
+  catch { return []; }
+}
+
+function saveLocal(items: WorkItem[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 
 export async function listWorkItems(): Promise<WorkItem[]> {
+  const campaign_id = active();
   const supabase = createClient();
-  if (!supabase) return localItems();
-  const { data, error } = await supabase.from("work_items").select("*").order("created_at", { ascending: false });
+  if (!supabase) return localItems().filter((item) => item.campaign_id === campaign_id);
+  const { data, error } = await supabase.from("work_items").select("*").eq("campaign_id", campaign_id).order("created_at", { ascending: false });
   if (error) throw error;
   return (data || []) as WorkItem[];
 }
 
-export async function createWorkItem(input: Omit<WorkItem, "id" | "created_at">) {
+export async function createWorkItem(input: Omit<WorkItem, "id" | "created_at" | "campaign_id">) {
+  const campaign_id = active();
   const supabase = createClient();
   if (!supabase) {
-    const item: WorkItem = { ...input, id: crypto.randomUUID(), created_at: new Date().toISOString() };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([item, ...localItems()]));
+    const item: WorkItem = { ...input, id: crypto.randomUUID(), campaign_id, created_at: new Date().toISOString() };
+    saveLocal([item, ...localItems()]);
     return item;
   }
-  const { data, error } = await supabase.from("work_items").insert(input).select().single();
+  const { data, error } = await supabase.from("work_items").insert({ ...input, campaign_id }).select().single();
   if (error) throw error;
   return data as WorkItem;
 }
 
-export async function updateWorkItem(id: string, changes: Partial<WorkItem>) {
+export async function updateWorkItem(id: string, changes: Partial<Omit<WorkItem, "campaign_id">>) {
   const supabase = createClient();
   if (!supabase) {
-    const next = localItems().map((item) => item.id === id ? { ...item, ...changes } : item);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    saveLocal(localItems().map((item) => item.id === id ? { ...item, ...changes } : item));
     return;
   }
   const { error } = await supabase.from("work_items").update(changes).eq("id", id);
@@ -63,7 +62,7 @@ export async function updateWorkItem(id: string, changes: Partial<WorkItem>) {
 export async function deleteWorkItem(id: string) {
   const supabase = createClient();
   if (!supabase) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(localItems().filter((item) => item.id !== id)));
+    saveLocal(localItems().filter((item) => item.id !== id));
     return;
   }
   const { error } = await supabase.from("work_items").delete().eq("id", id);

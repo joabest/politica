@@ -1,1 +1,10 @@
-import Shell from "@/components/Shell";import ElectionCountdown from "@/components/ElectionCountdown";import {Section} from "@/components/Widgets";export default function Page(){return <Shell title="Calendário Eleitoral 2026"><ElectionCountdown/><div className="grid lg:grid-cols-2 gap-5 mt-5"><Section title="Marcos oficiais cadastrados"><div className="space-y-3"><div className="p-4 rounded-xl border border-[var(--border)]"><b>4 de outubro de 2026</b><p className="muted text-sm">Primeiro turno</p></div><div className="p-4 rounded-xl border border-[var(--border)]"><b>25 de outubro de 2026</b><p className="muted text-sm">Segundo turno, onde houver</p></div></div></Section><Section title="Linha do tempo estratégica"><div className="space-y-4">{["Preparação","Organização estratégica","Campanha eleitoral","Reta final","Primeiro turno"].map((x,i)=><div className="flex gap-3" key={x}><div className="w-8 h-8 rounded-full bg-[var(--primary)] text-white grid place-items-center text-xs">{i+1}</div><div><b>{x}</b><p className="text-sm muted">Fase demonstrativa; validar prazos oficiais com assessoria jurídica.</p></div></div>)}</div></Section></div></Shell>}
+import Shell from "@/components/Shell";
+import ElectionCountdown from "@/components/ElectionCountdown";
+import CalendarManager from "@/components/CalendarManager";
+
+export default function Page(){
+ return <Shell title="Calendário Eleitoral 2026">
+  <ElectionCountdown/>
+  <div className="mt-6"><CalendarManager/></div>
+ </Shell>
+}
