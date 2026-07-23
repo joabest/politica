@@ -28,7 +28,13 @@ export default function WorkItemsManager() {
     catch (caught) { setError(caught instanceof Error ? caught.message : "Não foi possível carregar as tarefas."); }
     finally { setLoading(false); }
   }
-  useEffect(() => { void load(); }, []);
+
+  useEffect(() => {
+    void load();
+    const handler = () => void load();
+    window.addEventListener("arcanum:campaign-changed", handler);
+    return () => window.removeEventListener("arcanum:campaign-changed", handler);
+  }, []);
 
   const filtered = useMemo(() => items.filter((item) =>
     `${item.title} ${item.description} ${item.category} ${item.assignee}`.toLowerCase().includes(query.toLowerCase()),
@@ -37,6 +43,7 @@ export default function WorkItemsManager() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
+    setError("");
     const form = new FormData(event.currentTarget);
     try {
       await createWorkItem({
@@ -55,23 +62,27 @@ export default function WorkItemsManager() {
   }
 
   async function move(id: string, status: WorkItem["status"]) {
-    await updateWorkItem(id, { status });
-    setItems((current) => current.map((item) => item.id === id ? { ...item, status } : item));
+    try {
+      await updateWorkItem(id, { status });
+      setItems((current) => current.map((item) => item.id === id ? { ...item, status } : item));
+    } catch (caught) { setError(caught instanceof Error ? caught.message : "Erro ao atualizar tarefa."); }
   }
 
   async function remove(id: string) {
     if (!confirm("Excluir esta tarefa?")) return;
-    await deleteWorkItem(id);
-    setItems((current) => current.filter((item) => item.id !== id));
+    try {
+      await deleteWorkItem(id);
+      setItems((current) => current.filter((item) => item.id !== id));
+    } catch (caught) { setError(caught instanceof Error ? caught.message : "Erro ao excluir tarefa."); }
   }
 
   return <>
     <section className="page-hero mb-6">
-      <div><span className="eyebrow">OPERAÇÃO</span><h1>Planejamento e execução</h1><p>Crie, acompanhe e mova entregas entre as etapas do fluxo de trabalho.</p></div>
+      <div><span className="eyebrow">OPERAÇÃO</span><h1>Planejamento e execução</h1><p>Tarefas vinculadas automaticamente à campanha selecionada no topo.</p></div>
       <div className="flex gap-2 flex-wrap"><span className="badge">{connected ? "Supabase conectado" : "Persistência local"}</span><button className="btn flex items-center gap-2" onClick={()=>setOpen(true)}><Plus size={17}/> Nova tarefa</button></div>
     </section>
     <div className="card p-4 mb-5 flex items-center gap-3"><Search size={18} className="muted"/><input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Buscar tarefa, categoria ou responsável..." className="flex-1 bg-transparent outline-none"/><span className="badge">{filtered.length} itens</span></div>
-    {error && <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+    {error && <div className="error-banner mb-5">{error}</div>}
     {loading ? <div className="card p-14 grid place-items-center"><Loader2 className="animate-spin"/></div> :
       <div className="kanban-grid">{statuses.map(({key,label,icon:Icon})=><section className="kanban-column" key={key}>
         <header><div className="flex items-center gap-2"><Icon size={17}/><b>{label}</b></div><span>{filtered.filter((item)=>item.status===key).length}</span></header>
@@ -83,7 +94,7 @@ export default function WorkItemsManager() {
         </article>)}</div>
       </section>)}</div>}
     {open && <div className="modal-backdrop" onMouseDown={()=>setOpen(false)}><form className="modal-card" onSubmit={submit} onMouseDown={(e)=>e.stopPropagation()}>
-      <div className="flex items-start justify-between"><div><h2>Nova tarefa</h2><p>Os dados serão salvos no Supabase ou localmente em modo demonstração.</p></div><button type="button" className="icon-btn" onClick={()=>setOpen(false)}><X size={18}/></button></div>
+      <div className="flex items-start justify-between"><div><h2>Nova tarefa</h2><p>A tarefa será vinculada à campanha ativa.</p></div><button type="button" className="icon-btn" onClick={()=>setOpen(false)}><X size={18}/></button></div>
       <label>Título<input name="title" required placeholder="Ex.: Preparar roteiro de entrevista"/></label>
       <label>Descrição<textarea name="description" rows={3} placeholder="Contexto, entrega esperada e observações."/></label>
       <div className="form-grid"><label>Status<select name="status" defaultValue="backlog">{statuses.map((status)=><option key={status.key} value={status.key}>{status.label}</option>)}</select></label><label>Prioridade<select name="priority" defaultValue="media"><option value="baixa">Baixa</option><option value="media">Média</option><option value="alta">Alta</option><option value="critica">Crítica</option></select></label></div>
