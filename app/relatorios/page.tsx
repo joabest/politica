@@ -1,1 +1,6 @@
-import GenericPage from "@/components/GenericPage";export default function Page(){return <GenericPage title="Relatórios"/>}
+import Shell from "@/components/Shell";
+import ReportsManager from "@/components/ReportsManager";
+
+export default function Page(){
+ return <Shell title="Relatórios"><ReportsManager/></Shell>;
+}
