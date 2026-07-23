@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import {useEffect,useState} from "react";
 import {ArrowRight, CalendarDays, Flag, TimerReset} from "lucide-react";
 const target=new Date("2026-10-04T08:00:00-03:00").getTime();
@@ -12,7 +13,7 @@ export default function ElectionCountdown(){
       <div className="hero-kicker"><Flag size={15}/> Eleições Gerais 2026</div>
       <h2 className="text-3xl md:text-4xl font-black tracking-tight mt-4">Inteligência para cada etapa da jornada.</h2>
       <p className="text-white/70 mt-3 max-w-xl">Organize prioridades, conteúdo e marcos estratégicos em uma visão única e preparada para evoluir com dados reais.</p>
-      <div className="flex flex-wrap gap-3 mt-6"><button className="hero-btn">Abrir calendário <ArrowRight size={16}/></button><button className="hero-btn ghost">Ver planejamento</button></div>
+      <div className="flex flex-wrap gap-3 mt-6"><Link className="hero-btn" href="/calendario-eleitoral">Abrir calendário <ArrowRight size={16}/></Link><Link className="hero-btn ghost" href="/planejamento">Ver planejamento</Link></div>
     </div>
     <div className="countdown-panel">
       <div className="flex items-center justify-between"><div><div className="text-xs text-white/60">PRIMEIRO TURNO</div><div className="font-semibold mt-1">4 de outubro de 2026</div></div><TimerReset size={22}/></div>
