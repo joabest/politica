@@ -3,7 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isSupabaseConfigured } from "./config";
 
 export async function updateSession(request: NextRequest) {
-  const publicPath = request.nextUrl.pathname === "/login";
+  const pathname = request.nextUrl.pathname;
+  const publicPath = pathname === "/login" || pathname.startsWith("/auth/");
 
   if (!isSupabaseConfigured()) {
     const demoSession = request.cookies.get("arcanum-demo-session")?.value === "1";

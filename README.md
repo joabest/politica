@@ -55,3 +55,19 @@ A chave publicável pode ser usada no navegador porque o acesso aos dados é lim
 - Perfis e papéis de equipe.
 - Relatórios persistentes.
 - Gemini com recuperação da biblioteca estratégica.
+
+## Correção de autenticação (V5.1)
+
+A rota `/auth/demo` foi liberada no proxy para evitar redirecionamento durante o login de demonstração. A tela de login também passou a tratar respostas vazias ou não-JSON sem quebrar com `Unexpected end of JSON input`.
+
+## Fase 6 — Campanhas
+
+Esta versão adiciona o módulo central de campanhas:
+
+- cadastro, edição, seleção e exclusão de campanhas;
+- persistência no Supabase ou localStorage em modo demonstração;
+- seletor global de campanha no cabeçalho;
+- vínculo inicial de tarefas, estratégias, eventos e conteúdos por `campaign_id`;
+- migration: `supabase/migrations/002_campaigns.sql`.
+
+Após publicar esta versão, execute a migration `002_campaigns.sql` no SQL Editor do Supabase.

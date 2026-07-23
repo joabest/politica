@@ -32,8 +32,22 @@ export default function LoginPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password }),
         });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || "Não foi possível entrar.");
+        const raw = await response.text();
+        let result: { error?: string; ok?: boolean } = {};
+
+        if (raw) {
+          try {
+            result = JSON.parse(raw) as { error?: string; ok?: boolean };
+          } catch {
+            throw new Error(
+              `A rota de autenticação respondeu em formato inválido (HTTP ${response.status}).`,
+            );
+          }
+        }
+
+        if (!response.ok) {
+          throw new Error(result.error || `Não foi possível entrar (HTTP ${response.status}).`);
+        }
       }
       router.replace("/dashboard");
       router.refresh();
