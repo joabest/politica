@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, LockKeyhole, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,8 +13,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("mkt2026");
-  const [password, setPassword] = useState("mkt2026");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -89,9 +90,10 @@ export default function LoginPage() {
               <button type="button" aria-label={show ? "Ocultar senha" : "Mostrar senha"} className="absolute right-2 top-2 icon-btn" onClick={()=>setShow(!show)}>{show ? <EyeOff size={18}/> : <Eye size={18}/>}</button>
             </div>
           </label>
+          {supabase && <div className="mt-3 text-right"><Link className="text-sm text-[var(--primary)] hover:underline focus-visible:outline-2" href="/recuperar-senha">Esqueci minha senha</Link></div>}
           {error && <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
           <button disabled={loading} className="btn w-full mt-6 flex justify-center items-center gap-2">{loading && <Loader2 className="animate-spin" size={18}/>} Entrar</button>
-          {!supabase && <p className="text-xs muted mt-4 text-center">Demonstração: mkt2026 / mkt2026</p>}
+          {!supabase && <p className="text-xs muted mt-4 text-center">O acesso de demonstração precisa ser habilitado pelo administrador.</p>}
         </form>
       </section>
     </main>

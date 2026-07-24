@@ -24,7 +24,7 @@ function loadNotifications():RadarNotification[]{try{return JSON.parse(localStor
 export default function PoliticalRadar(){
  const[candidates,setCandidates]=useState<Candidate[]>([]),[news,setNews]=useState<NewsItem[]>([]),[form,setForm]=useState(emptyCandidate),[period,setPeriod]=useState<Period>("7d"),[selected,setSelected]=useState("all"),[loading,setLoading]=useState(false),[error,setError]=useState(""),[status,setStatus]=useState("");
  const fileRef=useRef<HTMLInputElement>(null);
- useEffect(()=>{try{setCandidates(JSON.parse(localStorage.getItem(CANDIDATES_KEY)||"[]"));setNews(JSON.parse(localStorage.getItem(NEWS_KEY)||"[]"))}catch{}},[]);
+ useEffect(()=>{queueMicrotask(()=>{try{setCandidates(JSON.parse(localStorage.getItem(CANDIDATES_KEY)||"[]"));setNews(JSON.parse(localStorage.getItem(NEWS_KEY)||"[]"))}catch{setError("Não foi possível recuperar os dados locais do radar.")}})},[]);
  useEffect(()=>{localStorage.setItem(CANDIDATES_KEY,JSON.stringify(candidates))},[candidates]);
  useEffect(()=>{localStorage.setItem(NEWS_KEY,JSON.stringify(news))},[news]);
  const primary=candidates.find(x=>x.isPrimary);

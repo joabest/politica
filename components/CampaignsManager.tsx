@@ -42,7 +42,7 @@ export default function CampaignsManager() {
     } finally { setLoading(false); }
   }
 
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => { queueMicrotask(()=>void refresh()); }, []);
 
   const filtered = useMemo(() => campaigns.filter((c) => [c.name, c.candidate_name, c.city, c.office].join(" ").toLowerCase().includes(query.toLowerCase())), [campaigns, query]);
 

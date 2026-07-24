@@ -71,3 +71,17 @@ Esta versão adiciona o módulo central de campanhas:
 - migration: `supabase/migrations/002_campaigns.sql`.
 
 Após publicar esta versão, execute a migration `002_campaigns.sql` no SQL Editor do Supabase.
+
+## Qualidade e produção
+
+Requer Node.js 22 e npm 10+. Instale de forma reproduzível com `npm ci`; valide com `npm run check` (lint, tipos, testes e build). As migrations em `supabase/migrations` devem ser aplicadas em ordem no SQL Editor ou pela Supabase CLI.
+
+### Recuperação de senha
+
+No Supabase Dashboard, acesse **Authentication → URL Configuration → Redirect URLs** e adicione `https://SEU-DOMINIO/auth/callback`. O link recebido troca o código PKCE por uma sessão e abre `/redefinir-senha`. A resposta do formulário de recuperação é deliberadamente indistinguível para e-mails cadastrados e não cadastrados.
+
+### Variáveis
+
+Copie `.env.example` para `.env.local`. `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` habilitam autenticação e persistência; `GROQ_API_KEY` permanece exclusivamente no servidor. O modo demo é desativado por padrão e só deve ser usado localmente com `ARCANUM_ENABLE_DEMO=true` e credenciais próprias.
+
+Consulte [`docs/production-readiness.md`](docs/production-readiness.md) para deploy, riscos e checklist operacional.

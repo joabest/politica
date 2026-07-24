@@ -13,9 +13,9 @@ type EventForm=typeof empty;
 export default function CalendarManager(){
  const[events,setEvents]=useState<CalendarEvent[]>([]),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[open,setOpen]=useState(false),[query,setQuery]=useState(""),[error,setError]=useState(""),[editId,setEditId]=useState<string|null>(null),[form,setForm]=useState<EventForm>(empty);
  async function load(){setLoading(true);setError("");try{setEvents(await listCalendarEvents())}catch(e){setError(e instanceof Error?e.message:"Não foi possível carregar a agenda.")}finally{setLoading(false)}}
- useEffect(()=>{void load();const handler=()=>void load();window.addEventListener("arcanum:campaign-changed",handler);return()=>window.removeEventListener("arcanum:campaign-changed",handler)},[]);
+ useEffect(()=>{queueMicrotask(()=>void load());const handler=()=>void load();window.addEventListener("arcanum:campaign-changed",handler);return()=>window.removeEventListener("arcanum:campaign-changed",handler)},[]);
  const filtered=useMemo(()=>events.filter(e=>`${e.title} ${e.description} ${e.location} ${e.responsible} ${typeLabels[e.event_type]}`.toLowerCase().includes(query.toLowerCase())),[events,query]);
- const upcoming=filtered.filter(e=>new Date(e.starts_at).getTime()>=Date.now()&&e.status!=="cancelado");
+ const upcoming=filtered.filter(e=>new Date(e.starts_at).getTime()>=new Date().setHours(0,0,0,0)&&e.status!=="cancelado");
  function startNew(){setEditId(null);setForm(empty);setOpen(true)}
  function startEdit(e:CalendarEvent){setEditId(e.id);setForm({title:e.title,description:e.description,event_type:e.event_type,status:e.status,starts_at:e.starts_at.slice(0,16),ends_at:e.ends_at?e.ends_at.slice(0,16):"",location:e.location,responsible:e.responsible});setOpen(true)}
  async function submit(ev:FormEvent){ev.preventDefault();setSaving(true);setError("");try{await saveCalendarEvent({...form,starts_at:new Date(form.starts_at).toISOString(),ends_at:form.ends_at?new Date(form.ends_at).toISOString():null},editId||undefined);setOpen(false);await load()}catch(e){setError(e instanceof Error?e.message:"Erro ao salvar compromisso.")}finally{setSaving(false)}}
