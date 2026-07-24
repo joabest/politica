@@ -30,7 +30,7 @@ export default function WorkItemsManager() {
   }
 
   useEffect(() => {
-    void load();
+    queueMicrotask(()=>void load());
     const handler = () => void load();
     window.addEventListener("arcanum:campaign-changed", handler);
     return () => window.removeEventListener("arcanum:campaign-changed", handler);

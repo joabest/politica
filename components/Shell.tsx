@@ -26,13 +26,13 @@ function requiredPermission(href:string):Permission|undefined{if(href==="/config
 
 export default function Shell({children,title}:{children:React.ReactNode,title:string}){
  const p=usePathname(),navRef=useRef<HTMLElement>(null);
- const[open,setOpen]=useState(true),[mobile,setMobile]=useState(false),[notificationOpen,setNotificationOpen]=useState(false),[notifications,setNotifications]=useState<AppNotification[]>([]),[email,setEmail]=useState<string|null>(null),[permissionTick,setPermissionTick]=useState(0);
+ const[open,setOpen]=useState(true),[mobile,setMobile]=useState(false),[notificationOpen,setNotificationOpen]=useState(false),[notifications,setNotifications]=useState<AppNotification[]>([]),[email,setEmail]=useState<string|null>(null),[,setPermissionTick]=useState(0);
  const{resolvedTheme,setTheme}=useTheme();const supabase=createClient();
  async function logout(){if(supabase)await supabase.auth.signOut();await fetch("/auth/logout",{method:"POST"});window.location.href="/login"}
  useEffect(()=>{const load=()=>setNotifications(readNotifications());load();window.addEventListener("arcanum:notifications-changed",load);window.addEventListener("storage",load);return()=>{window.removeEventListener("arcanum:notifications-changed",load);window.removeEventListener("storage",load)}},[]);
  useEffect(()=>{void supabase?.auth.getUser().then(({data})=>setEmail(data.user?.email||null));const h=()=>setPermissionTick(x=>x+1);window.addEventListener("arcanum:permissions-changed",h);return()=>window.removeEventListener("arcanum:permissions-changed",h)},[supabase]);
  useEffect(()=>{const nav=navRef.current;if(!nav)return;nav.scrollTop=Number(sessionStorage.getItem(NAV_SCROLL_KEY)||0);const saveScroll=()=>sessionStorage.setItem(NAV_SCROLL_KEY,String(nav.scrollTop));nav.addEventListener("scroll",saveScroll,{passive:true});return()=>nav.removeEventListener("scroll",saveScroll)},[]);
- const access=useMemo(()=>getCurrentAccess(email),[email,permissionTick]);
+ const access=getCurrentAccess(email);
  const visibleMenu=useMemo(()=>menu.filter(([href])=>{const required=requiredPermission(href);return !required||access.admin||access.permissions.includes("all_modules")||access.permissions.includes(required)}),[access]);
  const unread=useMemo(()=>notifications.filter(n=>!n.read).length,[notifications]);
  function save(next:AppNotification[]){setNotifications(next);localStorage.setItem(NOTIFICATIONS_KEY,JSON.stringify(next));window.dispatchEvent(new Event("arcanum:notifications-changed"))}

@@ -1,4 +1,7 @@
 import {NextResponse} from "next/server";
+import {cookies} from "next/headers";
+import {z} from "zod";
+import {createClient} from "@/lib/supabase/server";
 
 export const runtime="nodejs";
 export const maxDuration=60;
@@ -6,6 +9,11 @@ export const maxDuration=60;
 type Candidate={id:string;name:string;party?:string;office?:string;city?:string;state?:string;aliases?:string[];keywords?:string[]};
 type Period="1h"|"24h"|"3d"|"7d";
 type RawNews={id:string;candidateId:string;title:string;description:string;source:string;url:string;publishedAt:string;tone:string;confidence:number;summary:string;theme:string;reason:string};
+
+const candidateSchema=z.object({id:z.string().min(1).max(100),name:z.string().trim().min(2).max(120),party:z.string().max(60).optional(),office:z.string().max(80).optional(),city:z.string().max(100).optional(),state:z.string().max(40).optional(),aliases:z.array(z.string().max(100)).max(5).optional(),keywords:z.array(z.string().max(80)).max(10).optional()});
+const scanSchema=z.object({candidates:z.array(candidateSchema).min(1).max(21),period:z.enum(["1h","24h","3d","7d"]).default("7d")});
+const requests=new Map<string,{count:number;reset:number}>();
+function allowRequest(key:string){const now=Date.now(),current=requests.get(key);if(!current||current.reset<now){requests.set(key,{count:1,reset:now+60_000});return true}if(current.count>=10)return false;current.count++;return true}
 
 const periodQuery:Record<Period,string>={"1h":"when:1h","24h":"when:1d","3d":"when:3d","7d":"when:7d"};
 const maxPerCandidate=15;
@@ -40,7 +48,7 @@ async function analyzeWithGroq(items:RawNews[],candidates:Candidate[]){
 }
 
 export async function POST(request:Request){
- try{const body=await request.json();const candidates=(body.candidates||[]) as Candidate[];const period=(body.period||"7d") as Period;if(!candidates.length)return NextResponse.json({error:"Nenhum candidato informado."},{status:400});if(candidates.length>21)return NextResponse.json({error:"O limite é de 21 candidatos por scan."},{status:400});if(!periodQuery[period])return NextResponse.json({error:"Período inválido."},{status:400});
+ try{const supabase=await createClient();const auth=supabase?await supabase.auth.getUser():null;const demo=process.env.ARCANUM_ENABLE_DEMO==="true"&&(await cookies()).get("arcanum-demo-session")?.value==="1";if((supabase&&!auth?.data.user)||(!supabase&&!demo))return NextResponse.json({error:"Autenticação necessária."},{status:401});const key=auth?.data.user?.id||"demo";if(!allowRequest(key))return NextResponse.json({error:"Muitas solicitações. Aguarde um minuto."},{status:429,headers:{"Retry-After":"60"}});const parsed=scanSchema.safeParse(await request.json());if(!parsed.success)return NextResponse.json({error:"Dados do scan inválidos.",details:parsed.error.flatten().fieldErrors},{status:400});const {candidates,period}=parsed.data;
   const results=await Promise.allSettled(candidates.map(c=>fetchCandidate(c,period)));const items=results.flatMap(r=>r.status==="fulfilled"?r.value:[]);const unique=[...new Map(items.map(x=>[x.url,x])).values()];const output=await analyzeWithGroq(unique,candidates);return NextResponse.json({...output,failedSources:results.filter(x=>x.status==="rejected").length});
- }catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Erro interno no radar."},{status:500})}
+ }catch{return NextResponse.json({error:"Não foi possível concluir o scan."},{status:500})}
 }

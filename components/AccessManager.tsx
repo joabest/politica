@@ -12,7 +12,7 @@ export function getCurrentAccess(email?:string|null){if((email||"").toLowerCase(
 
 export default function AccessManager(){
  const[members,setMembers]=useState<Member[]>([]),[email,setEmail]=useState(""),[name,setName]=useState(""),[saved,setSaved]=useState("");
- useEffect(()=>setMembers(read()),[]);
+ useEffect(()=>{queueMicrotask(()=>setMembers(read()))},[]);
  function persist(next:Member[]){setMembers(next);localStorage.setItem(KEY,JSON.stringify(next));window.dispatchEvent(new Event("arcanum:permissions-changed"));setSaved("Permissões atualizadas.");setTimeout(()=>setSaved(""),1800)}
  function add(){if(!email.trim())return;persist([...members,{id:crypto.randomUUID(),email:email.trim().toLowerCase(),name:name.trim()||email.split("@")[0],active:true,permissions:["radar"]}]);setEmail("");setName("")}
  function toggle(id:string,p:Permission){persist(members.map(m=>m.id===id?{...m,permissions:m.permissions.includes(p)?m.permissions.filter(x=>x!==p):[...m.permissions,p]}:m))}

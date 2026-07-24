@@ -9,7 +9,7 @@ const memberEmpty:TeamMemberForm={full_name:"",role:"",area:"Estratégia",email:
 export default function PoliticalTeamManager(){
  const[tab,setTab]=useState<"candidates"|"team">("candidates"),[candidates,setCandidates]=useState<Candidate[]>([]),[team,setTeam]=useState<TeamMember[]>([]),[query,setQuery]=useState(""),[modal,setModal]=useState<null|"candidate"|"team">(null),[editId,setEditId]=useState<string|null>(null),[cf,setCf]=useState(candidateEmpty),[tf,setTf]=useState(memberEmpty),[error,setError]=useState("");
  async function refresh(){try{setError("");const[c,t]=await Promise.all([listCandidates(),listTeam()]);setCandidates(c);setTeam(t)}catch(e){setError(e instanceof Error?e.message:"Erro ao carregar dados")}}
- useEffect(()=>{refresh();const f=()=>refresh();window.addEventListener("arcanum:campaign-changed",f);return()=>window.removeEventListener("arcanum:campaign-changed",f)},[]);
+ useEffect(()=>{queueMicrotask(()=>void refresh());const f=()=>refresh();window.addEventListener("arcanum:campaign-changed",f);return()=>window.removeEventListener("arcanum:campaign-changed",f)},[]);
  const filteredCandidates=useMemo(()=>candidates.filter(c=>[c.full_name,c.public_name,c.office,c.party,c.city].join(" ").toLowerCase().includes(query.toLowerCase())),[candidates,query]);
  const filteredTeam=useMemo(()=>team.filter(m=>[m.full_name,m.role,m.area,m.email].join(" ").toLowerCase().includes(query.toLowerCase())),[team,query]);
  function newCandidate(){setEditId(null);setCf(candidateEmpty);setModal("candidate")} function editCandidate(c:Candidate){setEditId(c.id);setCf({...candidateEmpty,...c});setModal("candidate")}

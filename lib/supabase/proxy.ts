@@ -4,10 +4,13 @@ import { isSupabaseConfigured } from "./config";
 
 export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const publicPath = pathname === "/login" || pathname.startsWith("/auth/");
+  const publicPath = pathname === "/login" || pathname === "/recuperar-senha" ||
+    pathname === "/redefinir-senha" || pathname === "/auth/callback" ||
+    pathname === "/auth/demo";
 
   if (!isSupabaseConfigured()) {
-    const demoSession = request.cookies.get("arcanum-demo-session")?.value === "1";
+    const demoEnabled = process.env.ARCANUM_ENABLE_DEMO === "true";
+    const demoSession = demoEnabled && request.cookies.get("arcanum-demo-session")?.value === "1";
     if (!demoSession && !publicPath) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
