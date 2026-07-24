@@ -7,8 +7,8 @@ type Member={id:string;email:string;name:string;active:boolean;permissions:Permi
 const KEY="arcanum:access-control";
 const ADMIN="joab@admin.com";
 const options:[Permission,string][]=[["all_modules","Acessar todos os módulos"],["manage_users","Editar usuários e permissões"],["view_logs","Visualizar logs de atividade"],["settings","Acessar configurações administrativas"],["radar","Acessar Radar Político"],["library","Acessar Biblioteca"],["reports","Acessar Relatórios"],["content","Editar conteúdo e marketing"]];
-function read():Member[]{try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch{return[]}}
-export function getCurrentAccess(email?:string|null){if((email||"").toLowerCase()===ADMIN)return{admin:true,permissions:["all_modules","manage_users","view_logs","settings","radar","library","reports","content"] as Permission[]};const member=read().find(x=>x.email.toLowerCase()===(email||"").toLowerCase()&&x.active);return{admin:false,permissions:member?.permissions||[]}}
+function read():Member[]{if(typeof window==="undefined")return[];try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch{return[]}}
+export function getCurrentAccess(email?:string|null){if((email||"").toLowerCase()===ADMIN)return{admin:true,permissions:["all_modules","manage_users","view_logs","settings","radar","library","reports","content"] as Permission[]};const all=read(),member=all.find(x=>x.email.toLowerCase()===(email||"").toLowerCase());if(!member)return{admin:false,permissions:["all_modules"] as Permission[]};return{admin:false,permissions:member.active?member.permissions:[]}}
 
 export default function AccessManager(){
  const[members,setMembers]=useState<Member[]>([]),[email,setEmail]=useState(""),[name,setName]=useState(""),[saved,setSaved]=useState("");
